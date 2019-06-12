@@ -3,7 +3,26 @@ import  "../node_modules/fetch/lib/fetch.js";
 import  { models } from 'powerbi-client';
 // import { fetchUrl } from "fetch";
 
-console.warn("hello1", window.powerbi, powerbi);
+console.warn("START -------------------------------------\n", window.powerbi, powerbi);
+
+///print
+const enablePrintButton = (
+  powerbi, 
+  defaultPageReportContainer
+) => {
+  console.log('enabling print button...');
+  const report = powerbi.get(defaultPageReportContainer);
+  const printButton = document.getElementById('printButton');
+  if (printButton && report) {
+    printButton.onclick = () => {
+      report
+        .print()
+        .catch(error => { 
+            console.error('PRINT ERROR', error) 
+        });
+    }
+  }
+}
 
 if(! window.powerbi){
     console.warn('! window.powerbi')
@@ -11,14 +30,15 @@ if(! window.powerbi){
     // const models = window['powerbi-client'].models;
     const powerbi = window.powerbi;
     // const models = powerbi.models;
-    console.warn('powerbi', powerbi, models);
-    console.log('Scenario 5: Default Page and/or Filter');
+    
+    console.log('preparing variables...');
 
-    var staticReportUrl = 'https://powerbi-embed-api.azurewebsites.net/api/reports/c52af8ab-0468-4165-92af-dc39858d66ad';
-    var defaultPageReportContainer = document.getElementById('reportdefault');
-    var defaultPageReport;
-    var defaultPageName = 'ReportSection2';
-    var defaultFilter = new models.AdvancedFilter({
+    const staticReportUrl = 'https://powerbi-embed-api.azurewebsites.net/api/reports/c52af8ab-0468-4165-92af-dc39858d66ad';
+    const defaultPageReportContainer = document.getElementById('reportdefault');
+    let defaultPageReport = undefined;
+
+    const defaultPageName = 'ReportSection2';
+    const defaultFilter = new models.AdvancedFilter({
         table: "Store",
         column: "Name"
     }, "Or", [
@@ -32,15 +52,18 @@ if(! window.powerbi){
         }
         ]);
 
-    var defaultFilters = [defaultFilter];
+    const defaultFilters = [defaultFilter];
 
+  
     // Init
     fetch(staticReportUrl)
-    .then(function (response) {
+    .then((response) => {
         if (response.ok) {
+            console.log('RESPONSE FETCHING OK');
             return response.json()
-            .then(function (embedConfig) {
-                var defaultsEmbedConfig = { 
+            .then((embedConfig) => {
+                console.log('embedding report...');
+                const defaultsEmbedConfig = { 
                     ...embedConfig,
                     pageName: defaultPageName,
                     filter: defaultFilters,
@@ -55,11 +78,17 @@ if(! window.powerbi){
             });
         }
         else {
+            console.error('RESPONSE FETCHING FAILED');
             return response.json()
             .then(function (error) {
                 throw new Error(error);
             });
         }
+    }).then(()=>{
+      enablePrintButton(powerbi, defaultPageReportContainer);
+    }).then(()=>{
+      console.log('DONE.')
     });
+
+    
 }
-console.warn("buy");
