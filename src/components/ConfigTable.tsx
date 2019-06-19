@@ -5,7 +5,6 @@ import config from "../config";
 import "./ConfigTable.less";
 
 const ConfigTable = () => {
-
     return (
     <section className="config">
         {map(

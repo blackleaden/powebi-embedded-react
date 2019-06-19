@@ -54,7 +54,6 @@ if(! window.powerbi){
 
     const defaultFilters = [defaultFilter];
 
-  
     // Init
     fetch(staticReportUrl)
     .then((response) => {
@@ -89,6 +88,4 @@ if(! window.powerbi){
     }).then(()=>{
       console.log('DONE.')
     });
-
-    
 }

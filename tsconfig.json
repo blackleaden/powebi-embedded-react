@@ -1,0 +1,14 @@
+{ 
+  "compilerOptions": {
+    "resolveJsonModule": true,
+    "jsx": "react",
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "allowSyntheticDefaultImports": true,
+    "esModuleInterop": true,
+    "types": ["jest", "react"]
+  },
+  "env": {
+    "jest": true
+  },
+}

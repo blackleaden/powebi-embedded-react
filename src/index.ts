@@ -3,7 +3,7 @@ import * as ReactDOM from "react-dom";
 
 import App from "./App";
 
-const targetElem = document && document.getElementById("app");
+const targetElem = document && document.getElementById("example");
 
 if (targetElem) {
     ReactDOM.render(
