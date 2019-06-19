@@ -1,6 +1,6 @@
-import { ConfigProps } from "./dataInterfaces"
+import { Config } from "./dataInterfaces"
 
-export const config: ConfigProps = {
+export const config: Config = {
   authorityUrl: "https://login.microsoftonline.com/common/",
   resourceUrl: "https://analysis.windows.net/powerbi/api",
   apiUrl: "https://api.powerbi.com/",
@@ -8,7 +8,7 @@ export const config: ConfigProps = {
   workspaceId: "d1be9da7-1ec7-42b1-a48b-913a46798da8",
   reportId: "62097fd8-aec8-4241-9de6-8bd08a8826b8",
   username: "",
-  password: ""
+  password: "",
 };
 
 export default config;

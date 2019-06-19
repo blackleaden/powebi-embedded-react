@@ -1,4 +1,4 @@
-export interface ConfigProps {
+export interface Config {
   authorityUrl: string;
   resourceUrl: string;
   apiUrl: string;
@@ -7,4 +7,9 @@ export interface ConfigProps {
   reportId: string;
   username: string;
   password: string;
+}
+
+export interface PowerBIClient{
+  powerbi: any; //TODO type
+  models: any; //TODO type
 }

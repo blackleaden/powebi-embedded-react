@@ -1,15 +1,15 @@
-import * as React from "react";
 import { map } from "lodash";
-import config from "../config";
+import * as React from "react";
+import { Config } from "../dataInterfaces";
 
 import "./ConfigTable.less";
 
-const ConfigTable = () => {
+const ConfigTable: React.FunctionComponent<Config> = (props: Config) => {
     return (
     <section className="config">
         {map(
-            config,
-            (value, key) => (
+            props,
+            (value: string, key: string) => (
                 <dl className="configItem" key={key}>
                     <dt className="configName">{key}</dt>
                     <dd className="configValue">{value}</dd>
@@ -17,7 +17,7 @@ const ConfigTable = () => {
             )
         )}
     </section>
-    )
-}
+    );
+};
 
 export default ConfigTable;

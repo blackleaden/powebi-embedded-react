@@ -1,27 +1,32 @@
 import * as React from "react";
-import { models } from "powerbi-client";
 
-import { ConfigProps } from "../dataInterfaces";
+import { Config, PowerBIClient } from "../dataInterfaces";
 
 const REPORT_ID = "reportdefault";
-const staticReportUrl =
-  "https://powerbi-embed-api.azurewebsites.net/api/reports/c52af8ab-0468-4165-92af-dc39858d66ad";
-const defaultPageName = "ReportSection2";
 
-export class SimpleReport extends React.Component<ConfigProps> {
+///print
+
+export interface ReportProps extends Config, PowerBIClient{
+  onReportFetched?: (reportContainerRef: React.RefObject<any>, report: any) => void;
+  reportPageName: string;
+  reportURL: string;
+}
+
+export class SimpleReport extends React.Component<ReportProps> {
+  public PowerBiReport: any; //TODO PBI types
+  public PowerBiEmbedConfig: any; //TODO PBI types
+
   public reportRef: React.RefObject<HTMLDivElement> = React.createRef<
     HTMLDivElement
   >();
-  public powerbi;
-  public models;
 
-  constructor(props: ConfigProps) {
+  constructor(props: ReportProps) {
     super(props);
-    this.powerbi = window.powerbi;
-    this.models = models;
   }
 
   public componentDidMount() {
+    const { powerbi, models, reportURL, reportPageName } = this.props;
+
     console.log("preparing variables...");
     const defaultFilter = new models.AdvancedFilter(
       {
@@ -41,46 +46,51 @@ export class SimpleReport extends React.Component<ConfigProps> {
       ]
     );
     const defaultFilters = [defaultFilter];
-    const defaultPageReportContainer = this.reportRef.current;
-    let defaultPageReport = undefined;
 
-    if (!defaultPageReportContainer) {
+    const reportContainer = this.reportRef.current;
+    const saveReport = (report: any) => { this.PowerBiReport = report; };
+    const saveEmbedConfig = (embedConfig: any) => { this.PowerBiEmbedConfig = embedConfig }
+    
+    if (!reportContainer) {
       console.warn("No report container mounted!");
     } else {
-      fetch(staticReportUrl)
+      fetch(reportURL)
         .then(response => {
           if (response.ok) {
-            console.log("RESPONSE FETCHING OK");
-            return response.json().then(embedConfig => {
-              console.log("embedding report...");
-              const defaultsEmbedConfig = {
-                ...embedConfig,
-                pageName: defaultPageName,
-                filter: defaultFilters,
-                settings: {
-                  filterPaneEnabled: true,
-                  navContentPaneEnabled: true
-                }
-              };
+            return response
+              .json()
+              .then(
+                embedConfig => {
+                  const defaultsEmbedConfig = {
+                    ...embedConfig,
+                    pageName: reportPageName,
+                    filter: defaultFilters,
+                    settings: {
+                      filterPaneEnabled: true,
+                      navContentPaneEnabled: true,
+                    }
+                  };
+                  saveEmbedConfig(defaultsEmbedConfig);
 
-              defaultPageReport = this.powerbi.embed(
-                defaultPageReportContainer,
-                defaultsEmbedConfig
-              );
-              return defaultPageReport;
+                  return powerbi.embed(
+                    reportContainer,
+                    defaultsEmbedConfig,
+                  );
             });
           } else {
             console.error("RESPONSE FETCHING FAILED");
-            return response.json().then(function(error) {
+            return response.json().then((error) => {
               throw new Error(error);
             });
           }
-          // }).then(()=>{
-          //   enablePrintButton(powerbi, defaultPageReportContainer);
-        })
-        .then(() => {
-          console.log("DONE.");
-        });
+        }).then(
+          (report) => {
+            saveReport(report);
+            if (this.props.onReportFetched) {
+              this.props.onReportFetched( this.reportRef, report );
+            }
+          }
+        );
     }
   }
   public render() {
